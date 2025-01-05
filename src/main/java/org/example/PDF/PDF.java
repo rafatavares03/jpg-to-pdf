@@ -74,14 +74,6 @@ public class PDF {
         pageSize.setLowerLeftY(0);
     }
 
-    public PDPage addNewPage(){
-        PDPage page = new PDPage();
-        this.pdfFile.addPage(page);
-        int pageIndex = this.pdfFile.getNumberOfPages()-1;
-        page = this.pdfFile.getPage(pageIndex);
-        return page;
-    }
-
     private void  drawImage(PDFImage image, PDPage page) {
         try{
             PDPageContentStream contentStream = new PDPageContentStream(this.pdfFile, page);
@@ -93,7 +85,7 @@ public class PDF {
     }
 
     public void addImagePage(String imagePath) {
-        PDPage page = addNewPage();
+        PDPage page = new PDPage();
         PDFImage image = new PDFImage();
         boolean success = image.setImage(imagePath, this.pdfFile);
         if(success) {
@@ -101,11 +93,13 @@ public class PDF {
             page.setMediaBox(image.getSize());
             drawImage(image, page);
             this.pages.add(page);
-            save();
         }
     }
 
     public void generate() {
-
+        for(int i = 0; i < this.pages.size(); i++) {
+            this.pdfFile.addPage(this.pages.get(i));
+        }
+        save();
     }
 }
