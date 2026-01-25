@@ -1,4 +1,4 @@
-package org.example.PDF;
+package com.rafatavares03.PDF;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;

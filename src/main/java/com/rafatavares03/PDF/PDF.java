@@ -1,4 +1,4 @@
-package org.example.PDF;
+package com.rafatavares03.PDF;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -6,7 +6,6 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 public class PDF {
     private final PDDocument pdfFile ;
