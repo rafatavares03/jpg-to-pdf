@@ -3,6 +3,7 @@ package com.rafatavares03.model;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 
 import java.io.File;
@@ -16,9 +17,10 @@ public class PdfPagesFactory {
         while(!images.isEmpty()) {
             File image = images.remove();
             System.out.println(image.getAbsolutePath());
-            PDImageXObject imageXObject = PDImageXObject.createFromFileByExtension(image, pdfFile);
+            PDImageXObject imageXObject = PDImageXObject.createFromFileByContent(image, pdfFile);
 
             PDPage newPage = new PDPage();
+            newPage.setMediaBox(new PDRectangle(imageXObject.getWidth(), imageXObject.getHeight()));
             drawImage(new PDPageContentStream(pdfFile, newPage), imageXObject);
             pages.add(newPage);
         }
@@ -26,7 +28,7 @@ public class PdfPagesFactory {
     }
 
     private static void drawImage(PDPageContentStream contentStream, PDImageXObject imageXObject) throws IOException {
-        contentStream.drawImage(imageXObject, 0, 0, 300, 300);
+        contentStream.drawImage(imageXObject, 0, 0, imageXObject.getWidth(), imageXObject.getHeight());
         contentStream.close();
     }
 }
