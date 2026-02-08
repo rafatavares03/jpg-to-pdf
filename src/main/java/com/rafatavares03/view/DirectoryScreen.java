@@ -1,6 +1,7 @@
 package com.rafatavares03.view;
 
 import com.rafatavares03.controller.ScreenController;
+import com.rafatavares03.controller.ScreenType;
 import com.rafatavares03.service.PdfGeneratorService;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -10,14 +11,16 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
 
+import java.awt.*;
 import java.io.File;
 
 public class DirectoryScreen implements Screen{
     private final ScreenController controller;
-    private Scene scene;
+    private final Scene scene;
     private final PdfGeneratorService pdfGeneratorService;
-    private ObjectProperty<File> inputDirectory = new SimpleObjectProperty<>();
-    private ObjectProperty<File> outputDirectory = new SimpleObjectProperty<>();
+    private final ObjectProperty<File> inputDirectory = new SimpleObjectProperty<>();
+    private final ObjectProperty<File> outputDirectory = new SimpleObjectProperty<>();
+    private final DirectoryChooser directoryChooser = new DirectoryChooser();
 
     public DirectoryScreen(ScreenController controller, PdfGeneratorService pdfGeneratorService) {
         this.controller = controller;
@@ -27,20 +30,10 @@ public class DirectoryScreen implements Screen{
 
     private Scene build() {
         VBox container = new VBox();
-        Text title = new Text("Selecione a pasta para gerar o PDF.");
-        DirectoryChooser directoryChooser = new DirectoryChooser();
+        Text pageText = new Text("Gere um único PDF a partir de fotos de uma pasta.");
 
-        Button inputDirectorySelector = new Button("Selecione a pasta de origem");
-        inputDirectorySelector.setOnAction(e -> {
-            inputDirectory.set(directoryChooser.showDialog(controller.getWindow()));
-            if(inputDirectory.get() != null) System.out.println("Origem:" + inputDirectory.get().getAbsolutePath());
-        });
-
-        Button outputDirectorySelector = new Button("Selecione a pasta de destino");
-        outputDirectorySelector.setOnAction(e -> {
-            outputDirectory.set(directoryChooser.showDialog(controller.getWindow()));
-            if(outputDirectory.get() != null) System.out.println("Destino:" + outputDirectory.get().getAbsolutePath());
-        });
+        VBox inputDirectorySelector = buttonSelectorContainer("Selecione a pasta que contém as imagens do PDF:", "Selecionar", inputDirectory);
+        VBox outputDirectorySelector = buttonSelectorContainer("Selecione a pasta para salvar o PDF:", "Selecionar", outputDirectory);
 
         Button generateFileButton = new Button("Gerar PDF");
         generateFileButton.disableProperty()
@@ -50,11 +43,27 @@ public class DirectoryScreen implements Screen{
                         );
         generateFileButton.setOnAction(e -> {
             pdfGeneratorService.generateSinglePdfFromDirectory(inputDirectory.get(), outputDirectory.get());
+            controller.setCurrentScreen(ScreenType.HOME);
         });
 
-        container.getChildren().addAll(title, inputDirectorySelector, outputDirectorySelector, generateFileButton);
+        container.getChildren().addAll(pageText, inputDirectorySelector, outputDirectorySelector, generateFileButton);
 
         return new Scene(container);
+    }
+
+    private VBox buttonSelectorContainer(String containerText, String buttonText, ObjectProperty<File> directory) {
+        VBox container = new VBox();
+        Text text = new Text(containerText);
+        Text path = new Text();
+        Button button = new Button(buttonText);
+        button.setOnAction(e -> {
+            directory.set(directoryChooser.showDialog(controller.getWindow()));
+            path.setText(directory.get().getAbsolutePath());
+            if(directory.get() != null) System.out.println("Origem:" + directory.get().getAbsolutePath());
+        });
+
+        container.getChildren().addAll(text,path,button);
+        return container;
     }
 
     public Scene show() {
