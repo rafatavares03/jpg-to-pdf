@@ -28,7 +28,6 @@ public class HomeScreen implements Screen{
 
             @Override
             public void handle(ActionEvent event) {
-                System.out.println("Hello World!");
                 controller.setCurrentScreen(ScreenType.DIRECTORY);
             }
         });
